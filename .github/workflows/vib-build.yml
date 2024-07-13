@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 env:
-  CUSTOM_IMAGE_NAME: custom
+  CUSTOM_IMAGE_NAME: firmware-nvidia
   BUILDX_NO_DEFAULT_ATTESTATIONS: 1
 
 jobs:
