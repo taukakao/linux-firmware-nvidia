@@ -1,11 +1,11 @@
-name: Custom Vanilla Desktop # Replace this name with your image name
-id: custom # Replace this ID with your image ID
+name: Firmware Nvidia image # Replace this name with your image name
+id: firmware-nvidia # Replace this ID with your image ID
 stages:
 - id: build
-  base: ghcr.io/vanilla-os/desktop:main # Optionally, Replace this image URL with a different one i.e. nvidia:main, etc
+  base: ghcr.io/vanilla-os/nvidia:main # Optionally, Replace this image URL with a different one i.e. nvidia:main, etc
   singlelayer: false
   labels:
-    maintainer: self-maintained # Optionally, Replace this with your name
+    maintainer: Tau # Optionally, Replace this with your name
   args:
     DEBIAN_FRONTEND: noninteractive # Set the image environment as non-interactive
   
@@ -23,23 +23,15 @@ stages:
 
   # Put your custom actions behind this comment
 
-  - name: example-packages # Sample module using the built-in Apt module to install packages
-    type: apt
-    source:
-      packages:
-      - vim
-
-  - name: example-commands # Sample module demonstrating the Shell module with custom commands
+  - name: install firmware
     type: shell
     commands:
-    - echo Example output
-
-  - name: example-modules # Sample module demonstrating importing local and remote modules
-    type: includes
-    includes:
-      - modules/50-install-debs.yml # Sample local module present in this repository
-      - gh:vanilla-os/dev-image:main:modules/00-basics.yml # Sample GitHub remote module in the format: `gh:your-name/your-repo:branch:modules/file.yml`
-      - https://raw.githubusercontent.com/Vanilla-OS/dev-image/main/modules/05-go.yml # Sample full URL remote module
+    - wget -P /var/tmp/ https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/snapshot/linux-firmware-20240709.tar.gz
+    - sha256sum -c /usr/share/firmware-checksum/checksum.txt
+    - tar -C /var/tmp/ -xz -f /var/tmp/linux-firmware-20240709.tar.gz
+    - cp -r /var/tmp/linux-firmware-20240709/. /usr/lib/firmware/
+    - rm -r /var/tmp/linux-firmware-20240709
+    - rm /var/tmp/linux-firmware-20240709.tar.gz
 
   # Put your custom actions before this comment
 
